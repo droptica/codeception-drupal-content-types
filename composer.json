@@ -13,9 +13,6 @@
       "email": "andy.rigby@ixis.co.uk"
     }
   ],
-  "require": {
-    "ixis/codeception-drupal-pages": "~0.1"
-  },
   "extra": {
       "branch-alias": {
           "dev-develop": "1.4.x-dev"
