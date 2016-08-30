@@ -12,9 +12,9 @@ use Codeception\Module\Drupal\ContentTypeRegistry\Fields\Field;
 use Codeception\Module\Drupal\ContentTypeRegistry\ContentTypeRegistryStorageInterface;
 use Codeception\Module\Drupal\ContentTypeRegistry\ContentTypeRegistryYamlStorage;
 use Codeception\Lib\Interfaces\Web as WebInterface;
-use Codeception\Module\Drupal\Pages\AdminNodeAddPage;
-use Codeception\Module\Drupal\Pages\Page;
-use Codeception\Module\Drupal\Pages\NodePage;
+use Drupal\Pages\AdminNodeAddPage;
+use Drupal\Pages\Page;
+use Drupal\Pages\NodePage;
 use InvalidArgumentException;
 
 /**
