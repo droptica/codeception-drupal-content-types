@@ -1,7 +1,7 @@
 {
-  "name": "ixis/codeception-drupal-content-types",
+  "name": "droptica/codeception-drupal-content-types",
   "description": "A Codeception module to provide Drupal content types support.",
-  "homepage": "https://github.com/ixis/codeception-drupal-content-types",
+  "homepage": "https://github.com/droptica/codeception-drupal-content-types",
   "license": "MIT",
   "authors": [
     {
