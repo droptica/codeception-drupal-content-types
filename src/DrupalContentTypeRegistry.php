@@ -176,7 +176,9 @@ class DrupalContentTypeRegistry extends Module
             if ($field->isSkipped($role)) {
                 continue;
             }
-
+            if (method_exists($I, 'executeJS')) {
+                $I->executeJS("document.querySelector('" . $field->getWidget()->getSelector() . "').scrollIntoView(true)");
+            }
             // Save the title to check later on that the node was created properly.
             if ($field->getMachine() == 'title') {
                 // If we've passed in a custom title use that, otherwise use the default field test data.
@@ -194,6 +196,11 @@ class DrupalContentTypeRegistry extends Module
             }
         }
 
+        if (method_exists($I, 'executeJS')) {
+            // On mobile resolutions, clicking the submit button does not do anything
+            // unless it is in view first.
+            $I->executeJS("document.querySelector('" . $contentType->getSubmitSelector() . "').scrollIntoView(true)");
+        }
         // Submit the node.
         $I->click($contentType->getSubmitSelector());
 
