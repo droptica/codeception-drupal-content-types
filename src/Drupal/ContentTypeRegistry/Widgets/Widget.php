@@ -230,10 +230,10 @@ abstract class Widget
      * @return string
      *   The selector that has been derived from the machine name.
      */
-    public static function selectorFromMachine($machine)
+    public static function selectorFromMachine($machine, $add_und = TRUE)
     {
         $converted = str_replace("_", "-", $machine);
-        return 'edit-' . $converted . '-und';
+        return 'edit-' . $converted . ($add_und ? '-und' : '');
     }
 
     /**

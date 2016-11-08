@@ -8,6 +8,7 @@ namespace Codeception\Module\Drupal\ContentTypeRegistry\Fields;
 
 use Codeception\Exception\Configuration as ConfigurationException;
 use Codeception\Lib\Interfaces\Web;
+use Codeception\Util\Debug;
 use Codeception\Module\Drupal\ContentTypeRegistry\Widgets\Widget;
 
 /**
@@ -464,6 +465,17 @@ class Field
         if (!isset($value)) {
             // Don't even run pre/post steps if no value is specified.
             return;
+        }
+
+        if (method_exists($I, 'executeJS')) {
+            try {
+                $widget = $this->getWidget();
+                $selctor_from_machine = $widget->selectorFromMachine($this->getMachine(), FALSE);
+                $I->executeJS("document.querySelector('#" . $selctor_from_machine . "').scrollIntoView(true)");
+            }
+            catch (\Exception $e) {
+                Debug::debug($e->getMessage());
+            }
         }
 
         // Run any number of steps before filling the field.
