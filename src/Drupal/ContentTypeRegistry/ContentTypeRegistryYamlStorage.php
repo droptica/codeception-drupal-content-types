@@ -7,7 +7,7 @@
 namespace Codeception\Module\Drupal\ContentTypeRegistry;
 
 use Symfony\Component\Yaml\Yaml;
-use Codeception\Exception\Configuration as ConfigurationException;
+use Codeception\Exception\ConfigurationException as ConfigurationException;
 use Codeception\Module\Drupal\ContentTypeRegistry\Fields\Field;
 
 /**

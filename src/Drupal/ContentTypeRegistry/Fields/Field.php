@@ -6,7 +6,7 @@
 
 namespace Codeception\Module\Drupal\ContentTypeRegistry\Fields;
 
-use Codeception\Exception\Configuration as ConfigurationException;
+use Codeception\Exception\ConfigurationException as ConfigurationException;
 use Codeception\Lib\Interfaces\Web;
 use Codeception\Util\Debug;
 use Codeception\Module\Drupal\ContentTypeRegistry\Widgets\Widget;

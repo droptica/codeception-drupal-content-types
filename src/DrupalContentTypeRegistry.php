@@ -152,7 +152,7 @@ class DrupalContentTypeRegistry extends Module
      * @return int
      *   The node ID of the node that has just been created.
      */
-    public function createNode($I, $type, $data = array(), $role = null)
+    public function createNode($I, $type, $data = array(), $role = null, $grab_nid = TRUE)
     {
         // Make sure we are trying to create a valid content type.
         if (!$this->isValidContentType($type)) {
@@ -215,10 +215,12 @@ class DrupalContentTypeRegistry extends Module
             $title
         );
 
-        $nid = $I->grabLastCreatedNid($I);
+        $I->seeCreateNodeWasSuccessful($I, $msg);
 
-        $I->seeCreateNodeWasSuccessful($I, $msg, $nid);
-
+        $nid = 0;
+        if ($grab_nid) {
+            $nid = $I->grabLastCreatedNid($I);
+        }
         return $nid;
     }
 
@@ -281,10 +283,8 @@ class DrupalContentTypeRegistry extends Module
      *   A reference to the Actor being used.
      * @param string $msg
      *   The success message that should be displayed by Drupal.
-     * @param int $nid
-     *   The created nid.
      */
-    public function seeCreateNodeWasSuccessful($I, $msg, $nid)
+    public function seeCreateNodeWasSuccessful($I, $msg)
     {
         $I->see($msg, ".alert-success");
         $I->dontSee(" ", ".messages.error");
