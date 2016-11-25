@@ -67,6 +67,31 @@ class ContentTypeRegistryYamlStorage implements ContentTypeRegistryStorageInterf
         if (empty(static::$contentTypes)) {
             static::$contentTypes = $this->loadContentTypes();
         }
+
+        if (function_exists('node_type_get_types')) {
+            $contentTypes = node_type_get_types();
+            foreach ($contentTypes as $ct_name => $ct_info) {
+                $fields = field_info_instances('node', $ct_name);
+                $fields_list = array();
+
+                foreach ($fields as $field_name => $field_settings) {
+                    $field_info = field_info_field($field_name);
+                    $field_type = $field_info['type'];
+                    $field_widget_type = $field_settings['widget']['type'];
+                    $field_type_info = field_info_field_types($field_type);
+                    $field_widget_type_info = field_info_widget_types($field_widget_type);
+                    $fields_list[$ct_name]['fields_config'][$field_name]['machineName'] = $field_name;
+                    $fields_list[$ct_name]['fields_config'][$field_name]['label'] = $field_settings['label'];
+                    $fields_list[$ct_name]['fields_config'][$field_name]['type'] = $field_type_info['label'];
+                    $fields_list[$ct_name]['fields_config'][$field_name]['widget'] = $field_widget_type_info['label'];
+                    $fields_list[$ct_name]['fields_config'][$field_name]['required'] = $field_settings['required'];
+                    $fields_list[$ct_name]['fields'][] = $field_name;
+                }
+            }
+            $fields_list_yaml = Yaml::dump($fields_list, 10, 2);
+            $globalConfigFile = getcwd() . DIRECTORY_SEPARATOR . 'tests/contentTypesDump.yml';
+            file_put_contents($globalConfigFile, $fields_list_yaml);
+        }
     }
 
     /**
