@@ -12,9 +12,6 @@ use Codeception\Module\Drupal\ContentTypeRegistry\Fields\Field;
 use Codeception\Module\Drupal\ContentTypeRegistry\ContentTypeRegistryStorageInterface;
 use Codeception\Module\Drupal\ContentTypeRegistry\ContentTypeRegistryYamlStorage;
 use Codeception\Lib\Interfaces\Web as WebInterface;
-use Drupal\Pages\AdminNodeAddPage;
-use Drupal\Pages\Page;
-use Drupal\Pages\NodePage;
 use InvalidArgumentException;
 use Codeception\Util\Debug;
 
@@ -159,7 +156,7 @@ class DrupalContentTypeRegistry extends Module
             throw new InvalidArgumentException('"' . $type . '" is not a valid content type');
         }
 
-        $I->amOnPage(AdminNodeAddPage::route($type));
+        $I->amOnPage('/node/add/' . str_replace('_', '-', $type));
 
         $contentType = $this->getContentType($type);
         $title = '';
@@ -238,7 +235,7 @@ class DrupalContentTypeRegistry extends Module
     public function deleteNode($I, $nid)
     {
         if (isset($nid)) {
-            $I->amOnPage(NodePage::route($nid, true));
+            $I->amOnPage('/node/' . $nid . '/edit');
 
             $I->click('#edit-delete');
             $I->see('Are you sure you want to delete');
@@ -263,7 +260,7 @@ class DrupalContentTypeRegistry extends Module
     public function grabLastCreatedNid($I)
     {
         // Grab the node id from the Edit tab once the node has been saved.
-        $edit_url = $I->grabAttributeFrom(Page::$nodeEditTabLinkSelector, 'href');
+        $edit_url = $I->grabAttributeFrom('ul.tabs--primary > li:nth-child(2) > a', 'href');
         $matches = array();
 
         if (preg_match('~/node/(\d+)/edit~', $edit_url, $matches)) {
