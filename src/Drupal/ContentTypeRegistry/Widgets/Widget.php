@@ -50,6 +50,7 @@ abstract class Widget
     protected static $widgetClasses = array(
         'Autocomplete'                              => 'AutocompleteWidget',
         'Autocomplete text field'                   => 'AutocompleteWidget',
+        'Autocomplete term widget (tagging)'        => 'AutocompleteWidget',
         'Book'                                      => 'BookWidget',
         'Check boxes'                               => 'CheckboxesWidget',
         'Dynamic address form'                      => 'AddressWidget',
@@ -74,8 +75,10 @@ abstract class Widget
         'Select list'                               => 'SelectListWidget',
         'Single on/off checkbox'                    => 'SingleCheckboxWidget',
         'Text area (multiple rows)'                 => 'TextAreaWidget',
+        'Text area (multiple rows) - wysiwyg'       => 'WysiwygWidget',
         'Text field'                                => 'TextWidget',
         'Text area with a summary'                  => 'WysiwygWidget',
+        'Text area with a summary - plain'          => 'TextAreaWidget',
         'Video'                                     => 'VideoWidget',
     );
 

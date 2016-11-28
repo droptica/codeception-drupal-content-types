@@ -52,12 +52,35 @@ class ContentTypeRegistryYamlStorage implements ContentTypeRegistryStorageInterf
     protected $config = array();
 
     /**
-     * Constructor.
+     * The parsed Yaml configuration, stored to avoid having to process it multiple times from loading a file.
      *
-     * Here we initialize the internal static storage from the yaml.
+     * @var array
      */
-    public function __construct()
+    protected $moduleConfig = array();
+
+    /**
+     * The parsed Yaml custom fields configuration.
+     *
+     * @var array
+     */
+    protected $customFieldsConfig = array();
+
+    /**
+     * Here we initialize the internal static storage from the yaml.
+     *
+     * ContentTypeRegistryYamlStorage constructor.
+     * @param $moduleConfig
+     */
+    public function __construct($moduleConfig)
     {
+        $this->moduleConfig = $moduleConfig;
+
+        $contentTypesAutoDump = $this->moduleConfig['contentTypesAutoDump'];
+
+        if (function_exists('node_type_get_types') && $contentTypesAutoDump) {
+            $this->dumpContentTypes();
+        }
+
         if (empty(static::$globalFields)) {
             static::$globalFields = $this->loadGlobalFields();
         }
@@ -66,31 +89,6 @@ class ContentTypeRegistryYamlStorage implements ContentTypeRegistryStorageInterf
         }
         if (empty(static::$contentTypes)) {
             static::$contentTypes = $this->loadContentTypes();
-        }
-
-        if (function_exists('node_type_get_types')) {
-            $contentTypes = node_type_get_types();
-            foreach ($contentTypes as $ct_name => $ct_info) {
-                $fields = field_info_instances('node', $ct_name);
-                $fields_list = array();
-
-                foreach ($fields as $field_name => $field_settings) {
-                    $field_info = field_info_field($field_name);
-                    $field_type = $field_info['type'];
-                    $field_widget_type = $field_settings['widget']['type'];
-                    $field_type_info = field_info_field_types($field_type);
-                    $field_widget_type_info = field_info_widget_types($field_widget_type);
-                    $fields_list[$ct_name]['fields_config'][$field_name]['machineName'] = $field_name;
-                    $fields_list[$ct_name]['fields_config'][$field_name]['label'] = $field_settings['label'];
-                    $fields_list[$ct_name]['fields_config'][$field_name]['type'] = $field_type_info['label'];
-                    $fields_list[$ct_name]['fields_config'][$field_name]['widget'] = $field_widget_type_info['label'];
-                    $fields_list[$ct_name]['fields_config'][$field_name]['required'] = $field_settings['required'];
-                    $fields_list[$ct_name]['fields'][] = $field_name;
-                }
-            }
-            $fields_list_yaml = Yaml::dump($fields_list, 10, 2);
-            $globalConfigFile = getcwd() . DIRECTORY_SEPARATOR . 'tests/contentTypesDump.yml';
-            file_put_contents($globalConfigFile, $fields_list_yaml);
         }
     }
 
@@ -108,7 +106,7 @@ class ContentTypeRegistryYamlStorage implements ContentTypeRegistryStorageInterf
     public function parseDataSource()
     {
         $suite = SuiteSettings::$suiteName;
-
+        $contentTypesFile = $this->moduleConfig['contentTypesFile'];
         // Get content types from configuration.
         //
         // If there is a content types yaml file in the current suite, use it. Otherwise, look for a global content
@@ -116,8 +114,8 @@ class ContentTypeRegistryYamlStorage implements ContentTypeRegistryStorageInterf
         //
         // @todo: could potentially pass in a var to load a different filename.
         $suiteConfigFile = getcwd() . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . $suite .
-            DIRECTORY_SEPARATOR . 'contentTypes.yml';
-        $globalConfigFile = getcwd() . DIRECTORY_SEPARATOR . 'tests/contentTypes.yml';
+          DIRECTORY_SEPARATOR . $contentTypesFile;
+        $globalConfigFile = getcwd() . DIRECTORY_SEPARATOR . 'tests/' . $contentTypesFile;
 
         if (file_exists($suiteConfigFile)) {
             $yaml = file_get_contents($suiteConfigFile);
@@ -128,6 +126,110 @@ class ContentTypeRegistryYamlStorage implements ContentTypeRegistryStorageInterf
         } else {
             throw new ConfigurationException("Content Type Registry: no configuration files found.");
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseCustomFields()
+    {
+        $suite = SuiteSettings::$suiteName;
+        $customFieldsFile = $this->moduleConfig['customFieldsFile'];
+
+        // Get custom fields from configuration.
+        $suiteFieldsConfigFile = getcwd() . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . $suite .
+          DIRECTORY_SEPARATOR . $customFieldsFile;
+        $globalFieldsConfigFile = getcwd() . DIRECTORY_SEPARATOR . 'tests/' . $customFieldsFile;
+
+        if (file_exists($suiteFieldsConfigFile)) {
+            $yaml = file_get_contents($suiteFieldsConfigFile);
+            $this->customFieldsConfig = Yaml::parse($yaml);
+        } elseif (file_exists($globalFieldsConfigFile)) {
+            $yaml = file_get_contents($globalFieldsConfigFile);
+            $this->customFieldsConfig = Yaml::parse($yaml);
+        }
+    }
+
+    /**
+     * Dump drupal content types in module input format to .yml file.
+     */
+    public function dumpContentTypes() {
+        $contentTypesAutoDumpFile = $this->moduleConfig['contentTypesAutoDumpFile'];
+        $contentTypesSubmitSelector = $this->moduleConfig['contentTypesSubmitSelector'];
+        $contentTypesConfig = array('ContentTypes' => array());
+        $contentTypes = node_type_get_types();
+
+        $this->parseCustomFields();
+
+        foreach ($contentTypes as $ctName => $ctInfo) {
+            $fields = field_info_instances('node', $ctName);
+            $contentTypesConfig['ContentTypes'][$ctName]['humanName'] = $ctInfo->name;
+            $contentTypesConfig['ContentTypes'][$ctName]['machineName'] = $ctInfo->type;
+            $contentTypesConfig['ContentTypes'][$ctName]['fields'] = array();
+            $contentTypesConfig['ContentTypes'][$ctName]['submit'] = $contentTypesSubmitSelector;
+            if (isset($this->customFieldsConfig['Global']['title'])) {
+                $contentTypesConfig['ContentTypes'][$ctName]['fields']['title'] = $this->customFieldsConfig['Global']['title'];
+            }
+            foreach ($fields as $fieldName => $fieldSettings) {
+                $fieldInfoField = field_info_field($fieldName);
+                $fieldType = $fieldInfoField['type'];
+                $fieldWidgetType = $fieldSettings['widget']['type'];
+                $fieldTypeInfo = field_info_field_types($fieldType);
+                $fieldWidgetTypeInfo = field_info_widget_types($fieldWidgetType);
+                $fieldWidget = $fieldWidgetTypeInfo['label'];
+                if ($fieldWidgetTypeInfo['label'] == 'Check boxes/radio buttons') {
+                    $fieldWidget = ($fieldInfoField['cardinality'] === 1 ? 'Radio buttons' : 'Check boxes');
+                }
+                else if ($fieldWidgetTypeInfo['label'] == 'Text area with a summary') {
+                    $textProcessing = $fieldSettings['settings']['text_processing'];
+                    $fieldWidget .= ($textProcessing === 0 ? ' - plain' : '');
+                }
+                else if ($fieldWidgetTypeInfo['label'] == 'Text area (multiple rows)') {
+                    $textProcessing = $fieldSettings['settings']['text_processing'];
+                    $fieldWidget .= ($textProcessing === 1 ? ' - wysiwyg' : '');
+                }
+                $fieldConfig = array(
+                  'machineName' => $fieldName,
+                  'label' => $fieldSettings['label'],
+                  'type' => $fieldTypeInfo['label'],
+                  'widget' => $fieldWidget,
+                  'required' => $fieldSettings['required'],
+                );
+                $additionalFieldConfig = array();
+                if (!empty($this->customFieldsConfig)) {
+                    if (isset($this->customFieldsConfig['Global']) && in_array($fieldName, array_keys($this->customFieldsConfig['Global']))) {
+                        if (isset($this->customFieldsConfig['Global'][$fieldName]['additional_config'])) {
+                            $additionalFieldConfig = $this->customFieldsConfig['Global'][$fieldName]['additional_config'];
+                            unset($this->customFieldsConfig['Global'][$fieldName]['additional_config']);
+                        }
+                        $fieldConfig = array_merge($fieldConfig, $this->customFieldsConfig['Global'][$fieldName]);
+                    }
+                    if (isset($this->customFieldsConfig['ContentTypes'][$ctName]) && in_array($fieldName, array_keys($this->customFieldsConfig['ContentTypes'][$ctName]))) {
+                        if (isset($this->customFieldsConfig['ContentTypes'][$ctName][$fieldName]['additional_config'])) {
+                            // override additional field config from global section
+                            $additionalFieldConfig = $this->customFieldsConfig['ContentTypes'][$ctName][$fieldName]['additional_config'];
+                            unset($this->customFieldsConfig['ContentTypes'][$ctName][$fieldName]['additional_config']);
+                        }
+                        $fieldConfig = array_merge($fieldConfig, $this->customFieldsConfig['ContentTypes'][$ctName][$fieldName]);
+                    }
+                }
+                $contentTypesConfig['ContentTypes'][$ctName]['fields'][$fieldName] = $fieldConfig;
+                if (!empty($additionalFieldConfig)) {
+                    $additionalFieldConfigAction = isset($additionalFieldConfig['action']) ? $additionalFieldConfig['action'] : 'add';
+                    $additionalFields = isset($additionalFieldConfig['fields']) ? $additionalFieldConfig['fields'] : array();
+                    if ($additionalFieldConfigAction == 'replace') {
+                        unset($contentTypesConfig['ContentTypes'][$ctName]['fields'][$fieldName]);
+                    }
+                    foreach($additionalFields as $additionalFieldName => $additionalFieldSettings) {
+                        $contentTypesConfig['ContentTypes'][$ctName]['fields'][$additionalFieldName] = $additionalFieldSettings;
+                    }
+
+                }
+            }
+        }
+        $contentTypesConfigYaml = Yaml::dump($contentTypesConfig, 10, 2);
+        $dumpFile = getcwd() . DIRECTORY_SEPARATOR . 'tests/' . $contentTypesAutoDumpFile;
+        file_put_contents($dumpFile, $contentTypesConfigYaml);
     }
 
     /**

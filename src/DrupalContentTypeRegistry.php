@@ -23,6 +23,19 @@ use Codeception\Util\Debug;
 class DrupalContentTypeRegistry extends Module
 {
     /**
+     * Module yaml configuration.
+     *
+     * @var array
+     */
+    protected $config = array(
+      'contentTypesFile' => 'contentTypes.yml',
+      'contentTypesAutoDump' => FALSE,
+      'contentTypesAutoDumpFile' => 'contentTypesDump.yml',
+      'contentTypesSubmitSelector' => '#edit-submit',
+      'customFieldsFile' => 'customFields.yml',
+    );
+
+    /**
      * The storage class used by this content type registry.
      *
      * @var ContentTypeRegistryStorageInterface
@@ -34,7 +47,7 @@ class DrupalContentTypeRegistry extends Module
      */
     public function _beforeSuite($settings = array())
     {
-        $this->storage = new ContentTypeRegistryYamlStorage();
+        $this->storage = new ContentTypeRegistryYamlStorage($this->config);
     }
 
     /**
