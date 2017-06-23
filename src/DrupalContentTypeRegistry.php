@@ -296,7 +296,7 @@ class DrupalContentTypeRegistry extends Module
      */
     public function seeCreateNodeWasSuccessful($I, $msg)
     {
-        $I->see($msg, ".alert-success");
+        $I->see($msg, ".messages.status");
         $I->dontSee(" ", ".messages.error");
     }
 
@@ -313,6 +313,6 @@ class DrupalContentTypeRegistry extends Module
      */
     public function seeDeleteNodeWasSuccessful($I, $nid)
     {
-        $I->see("has been deleted.", ".alert-success");
+        $I->see("has been deleted.", ".messages.status");
     }
 }
