@@ -273,7 +273,7 @@ class DrupalContentTypeRegistry extends Module
     public function grabLastCreatedNid($I)
     {
         // Grab the node id from the Edit tab once the node has been saved.
-        $edit_url = $I->grabAttributeFrom('ul.tabs--primary > li:nth-child(2) > a', 'href');
+        $edit_url = $I->grabAttributeFrom("//ul[contains(@class,'tabs')]/li[2]/a", 'href');
         $matches = array();
 
         if (preg_match('~/node/(\d+)/edit~', $edit_url, $matches)) {
