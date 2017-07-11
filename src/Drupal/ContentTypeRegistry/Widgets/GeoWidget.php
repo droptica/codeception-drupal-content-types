@@ -24,7 +24,7 @@ class GeoWidget extends Widget
     /**
      * {@inheritdoc}
      */
-    public function getCssOrXpath()
+    public function getCssOrXpath($option = '')
     {
         if ($this->hasSelector()) {
             return $this->getSelector();

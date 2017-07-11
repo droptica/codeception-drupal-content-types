@@ -27,7 +27,7 @@ class CheckboxesWidget extends Widget
      * @param string $option
      *   The label on the checkbox that is to be checked or unchecked.
      */
-    public function getCssOrXpath($option)
+    public function getCssOrXpath($option = '')
     {
         return sprintf(
             '//div[@id="%s"]//label[contains(text(), "%s")]/../input',

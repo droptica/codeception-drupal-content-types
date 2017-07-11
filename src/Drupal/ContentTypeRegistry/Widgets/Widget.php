@@ -140,8 +140,14 @@ abstract class Widget
 
     /**
      * Gets a full CSS or XPath selector that can be applied to the web page to identify the widget.
+     *
+     * @param string $option
+     *   Additional option that can be passed.
+     *
+     * @return string
+     *   Field selector.
      */
-    public function getCssOrXpath()
+    public function getCssOrXpath($option = '')
     {
         if ($this->hasSelector()) {
             return $this->getSelector();

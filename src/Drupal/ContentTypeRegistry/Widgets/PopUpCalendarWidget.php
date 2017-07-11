@@ -26,7 +26,7 @@ class PopUpCalendarWidget extends Widget
     /**
      * {@inheritdoc}
      */
-    public function getCssOrXpath()
+    public function getCssOrXpath($option = '')
     {
         return '#' . $this->getSelector() . '-0-value-datepicker-popup-0';
     }

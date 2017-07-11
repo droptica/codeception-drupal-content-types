@@ -24,7 +24,7 @@ class RadioButtonsWidget extends Widget
     /**
      * {@inheritdoc}
      */
-    public function getCssOrXpath()
+    public function getCssOrXpath($option = '')
     {
         return sprintf(
             '//div[contains(@class, "form-item-%s")]/input',

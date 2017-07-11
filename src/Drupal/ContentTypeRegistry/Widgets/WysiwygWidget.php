@@ -26,7 +26,7 @@ class WysiwygWidget extends Widget
     /**
      * {@inheritdoc}
      */
-    public function getCssOrXpath()
+    public function getCssOrXpath($option = '')
     {
         return '#' . $this->getSelector() . '-0';
     }
@@ -34,7 +34,7 @@ class WysiwygWidget extends Widget
     /**
      * {@inheritdoc}
      */
-    public function fill($I, $value)
+    public function fill($I, $value = null)
     {
         if (!empty($value)) {
             // Change the format to plain text in order to get around the way that we can't fill the CKEditor itself.

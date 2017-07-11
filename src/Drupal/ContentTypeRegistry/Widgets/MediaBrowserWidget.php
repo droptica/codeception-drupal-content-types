@@ -31,7 +31,7 @@ class MediaBrowserWidget extends MediaWidget
      * @param string $value
      *   The file name to select.
      */
-    public function fill($I, $value)
+    public function fill($I, $value = null)
     {
         if (!$value) {
             return;

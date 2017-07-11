@@ -57,7 +57,7 @@ class AddressWidget extends Widget
     /**
      * {@inheritdoc}
      */
-    public function getCssOrXpath()
+    public function getCssOrXpath($option = '')
     {
         if ($this->hasSelector()) {
             return $this->getSelector();
@@ -72,7 +72,7 @@ class AddressWidget extends Widget
      * The $value should be an array where the keys are the field labels, such as "Address 1" or "Postcode" and the
      * values contain the data to go in those fields.
      */
-    public function fill($I, $value)
+    public function fill($I, $value = null)
     {
         if (!empty($value)) {
             $selector = $this->getCssOrXpath();

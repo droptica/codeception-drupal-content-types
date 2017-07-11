@@ -28,7 +28,7 @@ class BookWidget extends Widget
         $this->name = 'Book widget';
     }
 
-    public function getCssOrXpath()
+    public function getCssOrXpath($option = '')
     {
         return "#edit-book-bid";
     }
@@ -40,7 +40,7 @@ class BookWidget extends Widget
      * - book: the book title
      * - book_parent: the title of the book parent page
      */
-    public function fill($I, $value)
+    public function fill($I, $value = null)
     {
         if (!empty($value)) {
 

@@ -27,7 +27,7 @@ class HierarchicalWidget extends Widget
      * We can't do anything here just yet with hierarchical stuff, so we will
      * actually just do nothing.
      */
-    public function fill()
+    public function fill($I, $value = null)
     {
 
     }

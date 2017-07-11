@@ -24,7 +24,7 @@ class TextWidget extends Widget
     /**
      * {@inheritdoc}
      */
-    public function getCssOrXpath()
+    public function getCssOrXpath($option = '')
     {
         if ($this->getField()->getMachine() == 'title') {
             return '#edit-title';

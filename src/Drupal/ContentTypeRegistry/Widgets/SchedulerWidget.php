@@ -24,7 +24,7 @@ class SchedulerWidget extends Widget
     /**
      * {@inheritdoc}
      */
-    public function fill($I, $value)
+    public function fill($I, $value = null)
     {
         // @todo do nothing here for now. Could do with something sensible/safe here.
     }
