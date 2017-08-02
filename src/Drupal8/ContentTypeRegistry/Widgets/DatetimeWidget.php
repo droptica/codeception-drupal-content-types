@@ -24,7 +24,6 @@ class DatetimeWidget extends Widget {
    * {@inheritdoc}
    *
    * For this field, $value should be an array with the 'title' and 'url' keys.
-   * @todo: Filling html5 date fields.
    */
   public function fill($I, $value = NULL) {
     if (!empty($value)) {

@@ -478,8 +478,8 @@ class Field {
         $this->preSteps
       );
     }
-
-    $this->getWidget()->fill($I, $value);
+    $widget = $this->getWidget();
+    $widget->fill($I, $value);
 
     // Run any number of steps after filling the field.
     if (isset($this->postSteps)) {
