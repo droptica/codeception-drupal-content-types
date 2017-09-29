@@ -34,6 +34,12 @@ class DrupalContentTypeRegistryD8 extends Module
     'contentTypesSubmitSelector' => '#edit-actions .publish .form-submit',
     'customFieldsFile' => 'customFields.yml',
     'tests_root' => '/app/tests',
+    'message_info_selector' => '.messages.messages--status',
+    'message_warning_selector' => '.messages.messages--warning',
+    'message_error_selector' => '.messages.messages--error',
+    'node_edit_link_selector' => 'ul.tabs.primary > li:nth-child(2) > a',
+    'node_create_message' => '%s %s has been created.', // Content type name, node title
+    'node_delete_message' => 'has been deleted.',
   );
 
   /**
@@ -222,7 +228,7 @@ class DrupalContentTypeRegistryD8 extends Module
 
     // Check that the node was created properly.
     $msg = sprintf(
-      '%s %s has been created.',
+      $this->config['node_create_message'],
       $contentType->getHumanName(),
       $title
     );
@@ -275,7 +281,7 @@ class DrupalContentTypeRegistryD8 extends Module
   public function grabLastCreatedNid($I)
   {
     // Grab the node id from the Edit tab once the node has been saved.
-    $edit_url = $I->grabAttributeFrom('ul.tabs.primary > li:nth-child(2) > a', 'href');
+    $edit_url = $I->grabAttributeFrom($this->config['node_edit_link_selector'], 'href');
     $matches = array();
 
     if (preg_match('~/node/(\d+)/edit~', $edit_url, $matches)) {
@@ -298,8 +304,8 @@ class DrupalContentTypeRegistryD8 extends Module
    */
   public function seeCreateNodeWasSuccessful($I, $msg)
   {
-    $I->see($msg, ".messages.messages--status");
-    $I->dontSee(" ", ".messages.messages--error");
+    $I->see($msg, $this->config['message_info_selector']);
+    $I->dontSee(" ", $this->config['message_error_selector']);
   }
 
   /**
@@ -315,6 +321,6 @@ class DrupalContentTypeRegistryD8 extends Module
    */
   public function seeDeleteNodeWasSuccessful($I, $nid)
   {
-    $I->see("has been deleted.", ".messages.messages--status");
+    $I->see($this->config['node_delete_message'], $this->config['message_info_selector']);
   }
 }
