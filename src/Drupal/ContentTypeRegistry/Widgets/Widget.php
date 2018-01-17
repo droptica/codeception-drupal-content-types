@@ -51,6 +51,7 @@ abstract class Widget
         'Autocomplete'                              => 'AutocompleteWidget',
         'Autocomplete text field'                   => 'AutocompleteWidget',
         'Autocomplete term widget (tagging)'        => 'AutocompleteWidget',
+        'DefID / DocID field autocomplete'          => 'AutocompleteWidget',
         'Book'                                      => 'BookWidget',
         'Check boxes'                               => 'CheckboxesWidget',
         'Dynamic address form'                      => 'AddressWidget',
