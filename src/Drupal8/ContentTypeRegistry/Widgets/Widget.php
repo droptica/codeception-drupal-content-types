@@ -68,6 +68,7 @@ abstract class Widget {
     'entity_reference_autocomplete' => 'AutocompleteWidget',
     'entity_reference_autocomplete_tags' => 'AutocompleteWidget',
     'metatag_firehose' => 'MetatagWidget',
+    'yoast_seo_widget' => 'YoastSeoWidget',
     'disqus_comment' => 'DisqusCommentWidget',
     'comment_default' => 'CommentWidget',
 
